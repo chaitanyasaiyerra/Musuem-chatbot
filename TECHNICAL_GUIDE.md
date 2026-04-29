@@ -171,7 +171,7 @@ model = LiteLLMModel(
 
 # MCP server integration
 server_parameters = StdioServerParameters(
-    command="uv", args=["run", "server.py"]
+    command="uv", args=["run",&nbsp;"server.py"]
 )
 
 # Tool collection setup
@@ -186,54 +186,54 @@ with ToolCollection.from_mcp(server_parameters, trust_remote_code=True) as tool_
 ### 1. User Registration Flow
 ```mermaid
 graph LR
-    A["User Input"] --> B["Form Validation"]
-    B --> C["Password Hashing bcrypt"]
-    C --> D["Database Insert"]
-    D --> E["Flash Message"]
-    E --> F["Redirect to Login"]
+    A["User&nbsp;Input"] --> B["Form&nbsp;Validation"]
+    B --> C["Password&nbsp;Hashing&nbsp;bcrypt"]
+    C --> D["Database&nbsp;Insert"]
+    D --> E["Flash&nbsp;Message"]
+    E --> F["Redirect&nbsp;to&nbsp;Login"]
 ```
 
 ### 2. Chat Request Flow
 ```mermaid
 graph LR
-    A["User Message"] --> B["Route Handler"]
-    B --> C["Q&A Excel Lookup"]
-    C --> D["Cancel Detection"]
-    D --> E["Booking Detection"]
-    E --> F["AI Agent Fallback"]
-    F --> G["Tool Execution"]
-    G --> H["Response Formatting"]
-    H --> I["JSON Response"]
+    A["User&nbsp;Message"] --> B["Route&nbsp;Handler"]
+    B --> C["Q&A&nbsp;Excel&nbsp;Lookup"]
+    C --> D["Cancel&nbsp;Detection"]
+    D --> E["Booking&nbsp;Detection"]
+    E --> F["AI&nbsp;Agent&nbsp;Fallback"]
+    F --> G["Tool&nbsp;Execution"]
+    G --> H["Response&nbsp;Formatting"]
+    H --> I["JSON&nbsp;Response"]
 ```
 
 ### 3. Booking Flow (via Chat)
 ```mermaid
 graph LR
-    A["Natural Language"] --> B["Regex Extraction"]
-    B --> C["Date Parsing"]
+    A["Natural&nbsp;Language"] --> B["Regex&nbsp;Extraction"]
+    B --> C["Date&nbsp;Parsing"]
     C --> D["Validation"]
-    D --> E["Database Insert"]
+    D --> E["Database&nbsp;Insert"]
     E --> F["Confirmation"]
-    F --> G["Dashboard Auto-Refresh"]
+    F --> G["Dashboard&nbsp;Auto-Refresh"]
 ```
 
 ### 4. Booking Flow (via Web Form)
 ```mermaid
 graph LR
-    A["Form Submission"] --> B["Server Validation"]
-    B --> C["Date Check"]
-    C --> D["Database Insert"]
-    D --> E["JSON Response"]
-    E --> F["UI Update"]
+    A["Form&nbsp;Submission"] --> B["Server&nbsp;Validation"]
+    B --> C["Date&nbsp;Check"]
+    C --> D["Database&nbsp;Insert"]
+    D --> E["JSON&nbsp;Response"]
+    E --> F["UI&nbsp;Update"]
 ```
 
 ### 5. Authentication Flow
 ```mermaid
 graph LR
-    A["Login Request"] --> B["Email Lookup"]
-    B --> C["bcrypt Password Verification"]
-    C --> D["Session Creation"]
-    D --> E["Dashboard Access"]
+    A["Login&nbsp;Request"] --> B["Email&nbsp;Lookup"]
+    B --> C["bcrypt&nbsp;Password&nbsp;Verification"]
+    C --> D["Session&nbsp;Creation"]
+    D --> E["Dashboard&nbsp;Access"]
 ```
 
 ## 🗄️ Database Schema
