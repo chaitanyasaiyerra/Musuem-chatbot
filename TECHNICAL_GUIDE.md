@@ -186,54 +186,54 @@ with ToolCollection.from_mcp(server_parameters, trust_remote_code=True) as tool_
 ### 1. User Registration Flow
 ```mermaid
 graph LR
-    A([User Input]) --> B([Form Validation])
-    B --> C([Password Hashing bcrypt])
-    C --> D([Database Insert])
-    D --> E([Flash Message])
-    E --> F([Redirect to Login])
+    A["User Input"] --> B["Form Validation"]
+    B --> C["Password Hashing bcrypt"]
+    C --> D["Database Insert"]
+    D --> E["Flash Message"]
+    E --> F["Redirect to Login"]
 ```
 
 ### 2. Chat Request Flow
 ```mermaid
 graph LR
-    A([User Message]) --> B([Route Handler])
-    B --> C([Q&A Excel Lookup])
-    C --> D([Cancel Detection])
-    D --> E([Booking Detection])
-    E --> F([AI Agent Fallback])
-    F --> G([Tool Execution])
-    G --> H([Response Formatting])
-    H --> I([JSON Response])
+    A["User Message"] --> B["Route Handler"]
+    B --> C["Q&A Excel Lookup"]
+    C --> D["Cancel Detection"]
+    D --> E["Booking Detection"]
+    E --> F["AI Agent Fallback"]
+    F --> G["Tool Execution"]
+    G --> H["Response Formatting"]
+    H --> I["JSON Response"]
 ```
 
 ### 3. Booking Flow (via Chat)
 ```mermaid
 graph LR
-    A([Natural Language]) --> B([Regex Extraction])
-    B --> C([Date Parsing])
-    C --> D([Validation])
-    D --> E([Database Insert])
-    E --> F([Confirmation])
-    F --> G([Dashboard Auto-Refresh])
+    A["Natural Language"] --> B["Regex Extraction"]
+    B --> C["Date Parsing"]
+    C --> D["Validation"]
+    D --> E["Database Insert"]
+    E --> F["Confirmation"]
+    F --> G["Dashboard Auto-Refresh"]
 ```
 
 ### 4. Booking Flow (via Web Form)
 ```mermaid
 graph LR
-    A([Form Submission]) --> B([Server Validation])
-    B --> C([Date Check])
-    C --> D([Database Insert])
-    D --> E([JSON Response])
-    E --> F([UI Update])
+    A["Form Submission"] --> B["Server Validation"]
+    B --> C["Date Check"]
+    C --> D["Database Insert"]
+    D --> E["JSON Response"]
+    E --> F["UI Update"]
 ```
 
 ### 5. Authentication Flow
 ```mermaid
 graph LR
-    A([Login Request]) --> B([Email Lookup])
-    B --> C([bcrypt Password Verification])
-    C --> D([Session Creation])
-    D --> E([Dashboard Access])
+    A["Login Request"] --> B["Email Lookup"]
+    B --> C["bcrypt Password Verification"]
+    C --> D["Session Creation"]
+    D --> E["Dashboard Access"]
 ```
 
 ## 🗄️ Database Schema

@@ -14,8 +14,8 @@ MuseumBot is an **AI-powered museum assistant** that combines the intelligence o
 ### **Step 1: User Arrives at the Website**
 ```mermaid
 graph TD
-    A([User visits http://localhost:5000]) --> B([Landing page displays museum information, features, and gallery])
-    B --> C([User clicks 'Get Started' to register])
+    A["User visits http://localhost:5000"] --> B["Landing page displays museum information, features, and gallery"]
+    B --> C["User clicks 'Get Started' to register"]
 ```
 
 **What happens behind the scenes:**
@@ -28,10 +28,10 @@ graph TD
 ### **Step 2: User Registration**
 ```mermaid
 graph TD
-    A([User fills out registration form]) --> B([Form submits to /signup endpoint])
-    B --> C([Password is securely hashed using bcrypt])
-    C --> D([User data is stored in SQLite database])
-    D --> E([User is redirected to login page with success flash message])
+    A["User fills out registration form"] --> B["Form submits to /signup endpoint"]
+    B --> C["Password is securely hashed using bcrypt"]
+    C --> D["User data is stored in SQLite database"]
+    D --> E["User is redirected to login page with success flash message"]
 ```
 
 **Technical details:**
@@ -49,10 +49,10 @@ conn.execute(
 ### **Step 3: User Login**
 ```mermaid
 graph TD
-    A([User enters email and password]) --> B([System looks up user by email in database])
-    B --> C([bcrypt verifies password against stored hash])
-    C --> D([If valid, Flask session is created with user_id and username])
-    D --> E([User is redirected to dashboard /home])
+    A["User enters email and password"] --> B["System looks up user by email in database"]
+    B --> C["bcrypt verifies password against stored hash"]
+    C --> D["If valid, Flask session is created with user_id and username"]
+    D --> E["User is redirected to dashboard /home"]
 ```
 
 **Security features:**
@@ -63,10 +63,10 @@ graph TD
 ### **Step 4: Dashboard Access**
 ```mermaid
 graph TD
-    A([User sees personalized dashboard]) --> B([Recent active bookings are loaded via AJAX])
-    B --> C([Ticket statuses are auto-updated past dates → Visited])
-    C --> D([Quick action cards: Chat, Book Tickets, Current Exhibitions])
-    D --> E([Floating chatbot appears in bottom-right corner])
+    A["User sees personalized dashboard"] --> B["Recent active bookings are loaded via AJAX"]
+    B --> C["Ticket statuses are auto-updated past dates → Visited"]
+    C --> D["Quick action cards: Chat, Book Tickets, Current Exhibitions"]
+    D --> E["Floating chatbot appears in bottom-right corner"]
 ```
 
 **Dashboard features:**
@@ -80,9 +80,9 @@ graph TD
 ### **Step 5: Chatbot Interaction**
 ```mermaid
 graph TD
-    A([User types message in chatbot]) --> B([Message is sent to /api/chat endpoint])
-    B --> C([Message is saved to chat_history table for persistence])
-    C --> D([System processes the request through a priority pipeline])
+    A["User types message in chatbot"] --> B["Message is sent to /api/chat endpoint"]
+    B --> C["Message is saved to chat_history table for persistence"]
+    C --> D["System processes the request through a priority pipeline"]
 ```
 
 **Message processing pipeline (in order):**
@@ -94,14 +94,14 @@ graph TD
 ### **Step 6: Ticket Booking Process (via Chat)**
 ```mermaid
 graph TD
-    A([User says: Book ticket for John Smith...]) --> B([System detects booking intent])
-    B --> C([Regex extracts visitor details and date])
-    C --> D([dateparser library converts date string to YYYY-MM-DD])
-    D --> E([System validates date - no past dates allowed])
-    E --> F([Unique 8-character booking ID is generated])
-    F --> G([Booking is saved to database with status Active])
-    G --> H([Confirmation message with all details is sent back])
-    H --> I([Recent bookings section automatically refreshes via AJAX])
+    A["User says: Book ticket for John Smith..."] --> B["System detects booking intent"]
+    B --> C["Regex extracts visitor details and date"]
+    C --> D["dateparser library converts date string to YYYY-MM-DD"]
+    D --> E["System validates date - no past dates allowed"]
+    E --> F["Unique 8-character booking ID is generated"]
+    F --> G["Booking is saved to database with status Active"]
+    G --> H["Confirmation message with all details is sent back"]
+    H --> I["Recent bookings section automatically refreshes via AJAX"]
 ```
 
 **Regex extraction (from `app.py`):**
@@ -117,23 +117,23 @@ date_match = re.search(r'(\d+)\s*tickets?\s+for\s+([a-zA-Z0-9\s\-/,]+)$', query,
 ### **Step 7: Ticket Booking (via Web Form)**
 ```mermaid
 graph TD
-    A([User clicks Book Tickets on dashboard]) --> B([Modal opens with form for visitor details])
-    B --> C([Form submits to /api/book-ticket endpoint])
-    C --> D([Server validates date and creates booking])
-    D --> E([Confirmation displayed in modal])
-    E --> F([Bookings list auto-refreshes after 1 second])
+    A["User clicks Book Tickets on dashboard"] --> B["Modal opens with form for visitor details"]
+    B --> C["Form submits to /api/book-ticket endpoint"]
+    C --> D["Server validates date and creates booking"]
+    D --> E["Confirmation displayed in modal"]
+    E --> F["Bookings list auto-refreshes after 1 second"]
 ```
 
 ### **Step 8: AI-Powered Responses**
 ```mermaid
 graph TD
-    A([User asks: Where is the Mona Lisa?]) --> B([Question not found in Q&A database])
-    B --> C([Not a booking or cancellation request])
-    C --> D([Request sent to Ollama AI model llama3.2])
-    D --> E([AI model receives the query via Smolagents ToolCallingAgent])
-    E --> F([AI decides to call navigate_to_painting tool])
-    F --> G([Tool searches Excel file for the artwork])
-    G --> H([Response with floor, section, and room info is formatted and returned])
+    A["User asks: Where is the Mona Lisa?"] --> B["Question not found in Q&A database"]
+    B --> C["Not a booking or cancellation request"]
+    C --> D["Request sent to Ollama AI model llama3.2"]
+    D --> E["AI model receives the query via Smolagents ToolCallingAgent"]
+    E --> F["AI decides to call navigate_to_painting tool"]
+    F --> G["Tool searches Excel file for the artwork"]
+    G --> H["Response with floor, section, and room info is formatted and returned"]
 ```
 
 **AI integration details:**
@@ -146,10 +146,10 @@ graph TD
 ### **Step 9: Artwork Navigation**
 ```mermaid
 graph TD
-    A([User asks: Tell me about Starry Night]) --> B([AI calls get_complete_artwork_info or painting_description tool])
-    B --> C([Tool searches Unique_Museum_Art_Plan.xlsx])
-    C --> D([Artwork details are retrieved])
-    D --> E([Formatted response includes all available information])
+    A["User asks: Tell me about Starry Night"] --> B["AI calls get_complete_artwork_info or painting_description tool"]
+    B --> C["Tool searches Unique_Museum_Art_Plan.xlsx"]
+    C --> D["Artwork details are retrieved"]
+    D --> E["Formatted response includes all available information"]
 ```
 
 **Data sources:**
@@ -159,12 +159,12 @@ graph TD
 ### **Step 10: Booking Cancellation**
 ```mermaid
 graph TD
-    A([User says: cancel booking ABC12345]) --> B([System detects cancel intent])
-    B --> C([Regex extracts 8-character booking ID from message])
-    C --> D([Database is searched for booking matching ID AND user_id])
-    D --> E([If found and belongs to user: Status updated to Cancelled])
-    E --> F([Confirmation message is sent])
-    F --> G([Recent bookings section updates automatically])
+    A["User says: cancel booking ABC12345"] --> B["System detects cancel intent"]
+    B --> C["Regex extracts 8-character booking ID from message"]
+    C --> D["Database is searched for booking matching ID AND user_id"]
+    D --> E["If found and belongs to user: Status updated to Cancelled"]
+    E --> F["Confirmation message is sent"]
+    F --> G["Recent bookings section updates automatically"]
 ```
 
 **Security features:**
@@ -175,20 +175,20 @@ graph TD
 ### **Step 11: Chat Persistence**
 ```mermaid
 graph TD
-    A([Every message sent or received]) --> B([chat_persistence.js saves message to /api/save-chat])
-    B --> C([Message stored in chat_history table])
-    C --> D([On page load, /api/chat-history restores previous messages])
-    D --> E([On logout, /api/clear-chat clears the users chat history])
+    A["Every message sent or received"] --> B["chat_persistence.js saves message to /api/save-chat"]
+    B --> C["Message stored in chat_history table"]
+    C --> D["On page load, /api/chat-history restores previous messages"]
+    D --> E["On logout, /api/clear-chat clears the users chat history"]
 ```
 
 ### **Step 12: Real-time Updates**
 ```mermaid
 graph TD
-    A([After any booking or cancellation]) --> B([JavaScript detects booking action in response])
-    B --> C([setTimeout triggers loadRecentBookings after 1 second])
-    C --> D([New data is fetched from /api/recent-bookings via AJAX])
-    D --> E([UI updates without page refresh])
-    E --> F([User sees immediate feedback])
+    A["After any booking or cancellation"] --> B["JavaScript detects booking action in response"]
+    B --> C["setTimeout triggers loadRecentBookings after 1 second"]
+    C --> D["New data is fetched from /api/recent-bookings via AJAX"]
+    D --> E["UI updates without page refresh"]
+    E --> F["User sees immediate feedback"]
 ```
 
 **Frontend updates:**
@@ -281,31 +281,31 @@ graph TD
 ### **Booking Flow**
 ```mermaid
 graph TD
-    A([User Input: Book ticket for Alice...]) --> B([Regex Extraction: Details extracted])
-    B --> C([Date Parsing: converts to YYYY-MM-DD])
-    C --> D([Validation: Date is in future ✓])
-    D --> E([Database: INSERT with booking_id, status=Active])
-    E --> F([Response: Formatted confirmation with all details])
-    F --> G([UI Update: Recent bookings refresh automatically])
+    A["User Input: Book ticket for Alice..."] --> B["Regex Extraction: Details extracted"]
+    B --> C["Date Parsing: converts to YYYY-MM-DD"]
+    C --> D["Validation: Date is in future ✓"]
+    D --> E["Database: INSERT with booking_id, status=Active"]
+    E --> F["Response: Formatted confirmation with all details"]
+    F --> G["UI Update: Recent bookings refresh automatically"]
 ```
 
 ### **Question Flow (Q&A Match)**
 ```mermaid
 graph TD
-    A([User Input: What are your opening hours?]) --> B([Normalize: lowercase, no punctuation])
-    B --> C([Q&A Lookup: Check qa_dict → Match Found!])
-    C --> D([Response: Return pre-defined answer from Excel])
+    A["User Input: What are your opening hours?"] --> B["Normalize: lowercase, no punctuation"]
+    B --> C["Q&A Lookup: Check qa_dict → Match Found!"]
+    C --> D["Response: Return pre-defined answer from Excel"]
 ```
 
 ### **Question Flow (AI Fallback)**
 ```mermaid
 graph TD
-    A([User Input: Where can I find Van Gogh paintings?]) --> B([Q&A Lookup: No match found])
-    B --> C([Not a booking or cancel request])
-    C --> D([AI Processing: Send to llama3.2 via Smolagents])
-    D --> E([Tool Calling: AI decides to call navigate_to_painting])
-    E --> F([Data Search: Query Excel DB])
-    F --> G([Response: Return location information])
+    A["User Input: Where can I find Van Gogh paintings?"] --> B["Q&A Lookup: No match found"]
+    B --> C["Not a booking or cancel request"]
+    C --> D["AI Processing: Send to llama3.2 via Smolagents"]
+    D --> E["Tool Calling: AI decides to call navigate_to_painting"]
+    E --> F["Data Search: Query Excel DB"]
+    F --> G["Response: Return location information"]
 ```
 
 ## 🛡️ Security & Reliability
