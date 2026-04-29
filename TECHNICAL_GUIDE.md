@@ -13,7 +13,7 @@
 10. [Performance Considerations](#performance-considerations)
 11. [Development Workflow](#development-workflow)
 
-## 🎯 Project Overview   
+## Project Overview
 
 MuseumBot is a full-stack web application that combines traditional web development with modern AI capabilities. The application serves as an intelligent museum assistant that can handle ticket bookings, answer questions about artworks, and provide navigation assistance.
 
@@ -25,7 +25,7 @@ MuseumBot is a full-stack web application that combines traditional web developm
 4. **MCP Protocol**: Standardized tool communication for AI agents
 5. **Custom CSS Design**: Hand-crafted responsive design with CSS Grid, Flexbox, and CSS variables
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -59,7 +59,7 @@ MuseumBot is a full-stack web application that combines traditional web developm
                        └─────────────────┘
 ```
 
-## 🔧 Core Components
+## Core Components
 
 ### 1. Flask Application (`app.py`)
 
@@ -181,7 +181,7 @@ with ToolCollection.from_mcp(server_parameters, trust_remote_code=True) as tool_
 
 > **Note**: The main application (`app.py`) uses `llama3.2:latest` while `agent.py` uses `qwen2.5:1.5b`. The `app.py` agent is the one used in production.
 
-## 🔄 Data Flow
+## Data Flow
 
 ### 1. User Registration Flow
 ```mermaid
@@ -236,7 +236,7 @@ graph LR
     D --> E["Dashboard&nbsp;Access"]
 ```
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Users Table
 ```sql
@@ -285,7 +285,7 @@ CREATE TABLE chat_history (
 - **One-to-Many**: User → Chat History (via `user_id`)
 - **Unique Constraints**: email (users), booking_id (bookings)
 
-## 🤖 AI Integration
+## AI Integration
 
 ### Model Selection
 
@@ -342,7 +342,7 @@ patterns = {
 }
 ```
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Authentication Endpoints
 | Method | Route | Purpose |
@@ -380,7 +380,7 @@ patterns = {
 }
 ```
 
-## 🎨 Frontend Architecture
+## Frontend Architecture
 
 ### Template Structure (Jinja2)
 ```
@@ -439,7 +439,7 @@ The home page includes 4 modals:
 - **Glassmorphism**: `backdrop-filter: blur(10px)` on navbar and about section
 - **Micro-animations**: `@keyframes fadeInUp`, `@keyframes pulse`, `@keyframes spin`
 
-## 🔒 Security Implementation
+## Security Implementation
 
 ### Password Security
 ```python
@@ -486,7 +486,7 @@ def home():
 - Cancellation updates `status` to `'Cancelled'` and sets `cancelled_at` timestamp
 - Users can only cancel their own bookings (verified via `user_id`)
 
-## ⚡ Performance Considerations
+## Performance Considerations
 
 ### Database Optimization
 - **Row Factory**: `sqlite3.Row` for efficient dict-like access
@@ -517,7 +517,7 @@ if os.path.exists(qa_path):
 art_df = pd.read_excel("Unique_Museum_Art_Plan.xlsx")
 ```
 
-## 🔄 Development Workflow
+## Development Workflow
 
 ### Local Development Setup
 ```bash
