@@ -184,28 +184,56 @@ with ToolCollection.from_mcp(server_parameters, trust_remote_code=True) as tool_
 ## 🔄 Data Flow
 
 ### 1. User Registration Flow
-```
-User Input → Form Validation → Password Hashing (bcrypt) → Database Insert → Flash Message → Redirect to Login
+```mermaid
+graph LR
+    A([User Input]) --> B([Form Validation])
+    B --> C([Password Hashing bcrypt])
+    C --> D([Database Insert])
+    D --> E([Flash Message])
+    E --> F([Redirect to Login])
 ```
 
 ### 2. Chat Request Flow
-```
-User Message → Route Handler → Q&A Excel Lookup → Cancel Detection → Booking Detection → AI Agent (fallback) → Tool Execution → Response Formatting → JSON Response
+```mermaid
+graph LR
+    A([User Message]) --> B([Route Handler])
+    B --> C([Q&A Excel Lookup])
+    C --> D([Cancel Detection])
+    D --> E([Booking Detection])
+    E --> F([AI Agent Fallback])
+    F --> G([Tool Execution])
+    G --> H([Response Formatting])
+    H --> I([JSON Response])
 ```
 
 ### 3. Booking Flow (via Chat)
-```
-Natural Language → Regex Extraction (name, age, gender, contact, tickets, date) → Date Parsing → Validation → Database Insert → Confirmation → Dashboard Auto-Refresh
+```mermaid
+graph LR
+    A([Natural Language]) --> B([Regex Extraction])
+    B --> C([Date Parsing])
+    C --> D([Validation])
+    D --> E([Database Insert])
+    E --> F([Confirmation])
+    F --> G([Dashboard Auto-Refresh])
 ```
 
 ### 4. Booking Flow (via Web Form)
-```
-Form Submission → Server Validation → Date Check → Database Insert → JSON Response → UI Update
+```mermaid
+graph LR
+    A([Form Submission]) --> B([Server Validation])
+    B --> C([Date Check])
+    C --> D([Database Insert])
+    D --> E([JSON Response])
+    E --> F([UI Update])
 ```
 
 ### 5. Authentication Flow
-```
-Login Request → Email Lookup → bcrypt Password Verification → Session Creation → Dashboard Access
+```mermaid
+graph LR
+    A([Login Request]) --> B([Email Lookup])
+    B --> C([bcrypt Password Verification])
+    C --> D([Session Creation])
+    D --> E([Dashboard Access])
 ```
 
 ## 🗄️ Database Schema

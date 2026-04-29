@@ -12,12 +12,10 @@ MuseumBot is an **AI-powered museum assistant** that combines the intelligence o
 ## 🚀 How It Works: Step-by-Step Flow
 
 ### **Step 1: User Arrives at the Website**
-```
-User visits http://localhost:5000
-↓
-Landing page displays museum information, features, and gallery
-↓
-User clicks "Get Started" to register
+```mermaid
+graph TD
+    A([User visits http://localhost:5000]) --> B([Landing page displays museum information, features, and gallery])
+    B --> C([User clicks 'Get Started' to register])
 ```
 
 **What happens behind the scenes:**
@@ -28,16 +26,12 @@ User clicks "Get Started" to register
 - Font Awesome icons enhance the UI
 
 ### **Step 2: User Registration**
-```
-User fills out registration form (username, email, password)
-↓
-Form submits to /signup endpoint
-↓
-Password is securely hashed using bcrypt
-↓
-User data is stored in SQLite database
-↓
-User is redirected to login page with success flash message
+```mermaid
+graph TD
+    A([User fills out registration form]) --> B([Form submits to /signup endpoint])
+    B --> C([Password is securely hashed using bcrypt])
+    C --> D([User data is stored in SQLite database])
+    D --> E([User is redirected to login page with success flash message])
 ```
 
 **Technical details:**
@@ -53,16 +47,12 @@ conn.execute(
 ```
 
 ### **Step 3: User Login**
-```
-User enters email and password
-↓
-System looks up user by email in database
-↓
-bcrypt verifies password against stored hash
-↓
-If valid, Flask session is created with user_id and username
-↓
-User is redirected to dashboard (/home)
+```mermaid
+graph TD
+    A([User enters email and password]) --> B([System looks up user by email in database])
+    B --> C([bcrypt verifies password against stored hash])
+    C --> D([If valid, Flask session is created with user_id and username])
+    D --> E([User is redirected to dashboard /home])
 ```
 
 **Security features:**
@@ -71,16 +61,12 @@ User is redirected to dashboard (/home)
 - Failed login attempts show flash error messages
 
 ### **Step 4: Dashboard Access**
-```
-User sees personalized dashboard
-↓
-Recent active bookings are loaded via AJAX (/api/recent-bookings)
-↓
-Ticket statuses are auto-updated (past dates → "Visited")
-↓
-Quick action cards: Chat, Book Tickets, Current Exhibitions
-↓
-Floating chatbot appears in bottom-right corner
+```mermaid
+graph TD
+    A([User sees personalized dashboard]) --> B([Recent active bookings are loaded via AJAX])
+    B --> C([Ticket statuses are auto-updated past dates → Visited])
+    C --> D([Quick action cards: Chat, Book Tickets, Current Exhibitions])
+    D --> E([Floating chatbot appears in bottom-right corner])
 ```
 
 **Dashboard features:**
@@ -92,14 +78,11 @@ Floating chatbot appears in bottom-right corner
 - Interactive floating chatbot with chat persistence
 
 ### **Step 5: Chatbot Interaction**
-```
-User types message in chatbot
-↓
-Message is sent to /api/chat endpoint
-↓
-Message is saved to chat_history table for persistence
-↓
-System processes the request through a priority pipeline
+```mermaid
+graph TD
+    A([User types message in chatbot]) --> B([Message is sent to /api/chat endpoint])
+    B --> C([Message is saved to chat_history table for persistence])
+    C --> D([System processes the request through a priority pipeline])
 ```
 
 **Message processing pipeline (in order):**
@@ -109,24 +92,16 @@ System processes the request through a priority pipeline
 4. **AI Processing**: If none of above match, send to Ollama AI agent with MCP tools
 
 ### **Step 6: Ticket Booking Process (via Chat)**
-```
-User says: "Book ticket for John Smith, age 30, Male, contact 9876543210, 2 tickets for tomorrow"
-↓
-System detects booking intent (keywords: book, ticket, reservation)
-↓
-Regex extracts: name, age, gender, contact, ticket count, date
-↓
-dateparser library converts "tomorrow" to actual YYYY-MM-DD date
-↓
-System validates date (no past dates allowed)
-↓
-Unique 8-character booking ID is generated (e.g., "GLCXMLXT")
-↓
-Booking is saved to database with status "Active"
-↓
-Confirmation message with all details is sent back
-↓
-Recent bookings section automatically refreshes via AJAX
+```mermaid
+graph TD
+    A([User says: Book ticket for John Smith...]) --> B([System detects booking intent])
+    B --> C([Regex extracts visitor details and date])
+    C --> D([dateparser library converts date string to YYYY-MM-DD])
+    D --> E([System validates date - no past dates allowed])
+    E --> F([Unique 8-character booking ID is generated])
+    F --> G([Booking is saved to database with status Active])
+    G --> H([Confirmation message with all details is sent back])
+    H --> I([Recent bookings section automatically refreshes via AJAX])
 ```
 
 **Regex extraction (from `app.py`):**
@@ -140,37 +115,25 @@ date_match = re.search(r'(\d+)\s*tickets?\s+for\s+([a-zA-Z0-9\s\-/,]+)$', query,
 ```
 
 ### **Step 7: Ticket Booking (via Web Form)**
-```
-User clicks "Book Tickets" on dashboard
-↓
-Modal opens with form: visitor name, age, gender, contact, tickets, date
-↓
-Form submits to /api/book-ticket endpoint
-↓
-Server validates date and creates booking
-↓
-Confirmation displayed in modal
-↓
-Bookings list auto-refreshes after 1 second
+```mermaid
+graph TD
+    A([User clicks Book Tickets on dashboard]) --> B([Modal opens with form for visitor details])
+    B --> C([Form submits to /api/book-ticket endpoint])
+    C --> D([Server validates date and creates booking])
+    D --> E([Confirmation displayed in modal])
+    E --> F([Bookings list auto-refreshes after 1 second])
 ```
 
 ### **Step 8: AI-Powered Responses**
-```
-User asks: "Where is the Mona Lisa?"
-↓
-Question not found in Q&A database
-↓
-Not a booking or cancellation request
-↓
-Request sent to Ollama AI model (llama3.2:latest)
-↓
-AI model receives the query via Smolagents ToolCallingAgent
-↓
-AI decides to call navigate_to_painting("Mona Lisa") MCP tool
-↓
-Tool searches Unique_Museum_Art_Plan.xlsx for the artwork
-↓
-Response with floor, section, and room info is formatted and returned
+```mermaid
+graph TD
+    A([User asks: Where is the Mona Lisa?]) --> B([Question not found in Q&A database])
+    B --> C([Not a booking or cancellation request])
+    C --> D([Request sent to Ollama AI model llama3.2])
+    D --> E([AI model receives the query via Smolagents ToolCallingAgent])
+    E --> F([AI decides to call navigate_to_painting tool])
+    F --> G([Tool searches Excel file for the artwork])
+    G --> H([Response with floor, section, and room info is formatted and returned])
 ```
 
 **AI integration details:**
@@ -181,16 +144,12 @@ Response with floor, section, and room info is formatted and returned
 - Smolagents `ToolCallingAgent` handles tool selection and execution
 
 ### **Step 9: Artwork Navigation**
-```
-User asks: "Tell me about Starry Night"
-↓
-AI calls get_complete_artwork_info("Starry Night") or painting_description() tool
-↓
-Tool searches Unique_Museum_Art_Plan.xlsx
-↓
-Artwork details are retrieved (room, floor, section, description, history, artist)
-↓
-Formatted response includes all available information
+```mermaid
+graph TD
+    A([User asks: Tell me about Starry Night]) --> B([AI calls get_complete_artwork_info or painting_description tool])
+    B --> C([Tool searches Unique_Museum_Art_Plan.xlsx])
+    C --> D([Artwork details are retrieved])
+    D --> E([Formatted response includes all available information])
 ```
 
 **Data sources:**
@@ -198,22 +157,14 @@ Formatted response includes all available information
 - `Unique_Museum_Art_Plan.xlsx`: Artwork information including names, rooms, descriptions, history, artist info
 
 ### **Step 10: Booking Cancellation**
-```
-User says: "cancel booking ABC12345"
-↓
-System detects cancel intent (keywords: cancel, cancellation, delete)
-↓
-Regex extracts 8-character booking ID from message
-↓
-Database is searched for booking matching ID AND user_id
-↓
-If found and belongs to user:
-  → Status updated to "Cancelled" (soft delete)
-  → cancelled_at timestamp is recorded
-↓
-Confirmation message is sent
-↓
-Recent bookings section updates automatically
+```mermaid
+graph TD
+    A([User says: cancel booking ABC12345]) --> B([System detects cancel intent])
+    B --> C([Regex extracts 8-character booking ID from message])
+    C --> D([Database is searched for booking matching ID AND user_id])
+    D --> E([If found and belongs to user: Status updated to Cancelled])
+    E --> F([Confirmation message is sent])
+    F --> G([Recent bookings section updates automatically])
 ```
 
 **Security features:**
@@ -222,31 +173,22 @@ Recent bookings section updates automatically
 - Database transactions ensure data integrity
 
 ### **Step 11: Chat Persistence**
-```
-Every message sent or received
-↓
-chat_persistence.js saves message to /api/save-chat
-↓
-Message stored in chat_history table with user_id, sender, timestamp
-↓
-On page load, /api/chat-history restores previous messages
-↓
-On logout, /api/clear-chat clears the user's chat history
+```mermaid
+graph TD
+    A([Every message sent or received]) --> B([chat_persistence.js saves message to /api/save-chat])
+    B --> C([Message stored in chat_history table])
+    C --> D([On page load, /api/chat-history restores previous messages])
+    D --> E([On logout, /api/clear-chat clears the users chat history])
 ```
 
 ### **Step 12: Real-time Updates**
-```
-After any booking or cancellation
-↓  
-JavaScript detects booking_created or booking_cancelled in response
-↓
-setTimeout triggers loadRecentBookings() after 1 second
-↓
-New data is fetched from /api/recent-bookings via AJAX
-↓
-UI updates without page refresh
-↓
-User sees immediate feedback
+```mermaid
+graph TD
+    A([After any booking or cancellation]) --> B([JavaScript detects booking action in response])
+    B --> C([setTimeout triggers loadRecentBookings after 1 second])
+    C --> D([New data is fetched from /api/recent-bookings via AJAX])
+    D --> E([UI updates without page refresh])
+    E --> F([User sees immediate feedback])
 ```
 
 **Frontend updates:**
@@ -337,48 +279,33 @@ User sees immediate feedback
 ## 🔄 Data Flow Examples
 
 ### **Booking Flow**
-```
-User Input: "Book ticket for Alice, age 25, Female, contact 9876543210, 3 tickets for next weekend"
-↓
-Regex Extraction: name="Alice", age=25, gender="Female", contact="9876543210", tickets=3
-↓
-Date Parsing: "next weekend" → "2026-05-02" (via dateparser)
-↓
-Validation: Date is in future ✓
-↓
-Database: INSERT with booking_id="X7K2M9PL", status="Active"
-↓
-Response: Formatted confirmation with all details
-↓
-UI Update: Recent bookings refresh automatically
+```mermaid
+graph TD
+    A([User Input: Book ticket for Alice...]) --> B([Regex Extraction: Details extracted])
+    B --> C([Date Parsing: converts to YYYY-MM-DD])
+    C --> D([Validation: Date is in future ✓])
+    D --> E([Database: INSERT with booking_id, status=Active])
+    E --> F([Response: Formatted confirmation with all details])
+    F --> G([UI Update: Recent bookings refresh automatically])
 ```
 
 ### **Question Flow (Q&A Match)**
-```
-User Input: "What are your opening hours?"
-↓
-Normalize: "what are your opening hours" (lowercase, no punctuation)
-↓
-Q&A Lookup: Check qa_dict → Match Found!
-↓
-Response: Return pre-defined answer from Excel
+```mermaid
+graph TD
+    A([User Input: What are your opening hours?]) --> B([Normalize: lowercase, no punctuation])
+    B --> C([Q&A Lookup: Check qa_dict → Match Found!])
+    C --> D([Response: Return pre-defined answer from Excel])
 ```
 
 ### **Question Flow (AI Fallback)**
-```
-User Input: "Where can I find Van Gogh paintings?"
-↓
-Q&A Lookup: No match found
-↓
-Not a booking or cancel request
-↓
-AI Processing: Send to llama3.2 via Smolagents ToolCallingAgent
-↓
-Tool Calling: AI decides to call navigate_to_painting("Van Gogh")
-↓
-Data Search: Query Unique_Museum_Art_Plan.xlsx
-↓
-Response: Return location information (floor, section, room)
+```mermaid
+graph TD
+    A([User Input: Where can I find Van Gogh paintings?]) --> B([Q&A Lookup: No match found])
+    B --> C([Not a booking or cancel request])
+    C --> D([AI Processing: Send to llama3.2 via Smolagents])
+    D --> E([Tool Calling: AI decides to call navigate_to_painting])
+    E --> F([Data Search: Query Excel DB])
+    F --> G([Response: Return location information])
 ```
 
 ## 🛡️ Security & Reliability
