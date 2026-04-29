@@ -2,6 +2,10 @@
 
 A sophisticated web application that combines AI chatbot capabilities with museum ticket booking functionality. Built with Flask, SQLite, and Ollama for local AI processing, MuseumBot provides an intelligent interface for art exploration and seamless ticket management.
 
+📚 **Read the full documentation:**
+- [Step-by-Step Guide](STEP_BY_STEP_GUIDE.md) — How the application works from a user's perspective
+- [Technical Guide](TECHNICAL_GUIDE.md) — Deep dive into the architecture, data flow, and components
+
 ## ✨ Features
 
 ### 🤖 AI-Powered Chatbot

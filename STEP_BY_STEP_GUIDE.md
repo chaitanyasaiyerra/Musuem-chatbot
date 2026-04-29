@@ -5,24 +5,27 @@
 MuseumBot is an **AI-powered museum assistant** that combines the intelligence of a chatbot with practical ticket booking functionality. Think of it as a smart museum concierge that can:
 
 1. **Answer questions** about artworks, artists, and museum information
-2. **Book tickets** through natural conversation
+2. **Book tickets** through natural conversation (with full visitor details)
 3. **Help navigate** the museum by finding specific artworks
-4. **Manage bookings** (view, cancel, track history)
+4. **Manage bookings** (view, cancel, track history with status lifecycle)
+
 ## 🚀 How It Works: Step-by-Step Flow
 
 ### **Step 1: User Arrives at the Website**
 ```
 User visits http://localhost:5000
 ↓
-Landing page displays museum information and features
+Landing page displays museum information, features, and gallery
 ↓
 User clicks "Get Started" to register
 ```
 
 **What happens behind the scenes:**
-- Flask serves the `landing.html` template
-- Static assets (CSS, JS, images) are loaded
-- Responsive design adapts to user's device
+- Flask serves the `landing.html` template (extends `base.html`)
+- Custom CSS with CSS Grid, Flexbox, and CSS variables provides responsive styling
+- AOS (Animate On Scroll) library triggers smooth scroll animations
+- Google Fonts (Poppins + Playfair Display) provide typography
+- Font Awesome icons enhance the UI
 
 ### **Step 2: User Registration**
 ```
@@ -34,7 +37,7 @@ Password is securely hashed using bcrypt
 ↓
 User data is stored in SQLite database
 ↓
-User is redirected to login page
+User is redirected to login page with success flash message
 ```
 
 **Technical details:**
@@ -42,7 +45,7 @@ User is redirected to login page
 # Password security
 hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-# Database insertion
+# Database insertion with parameterized queries (prevents SQL injection)
 conn.execute(
     "INSERT INTO users (username, email, password, created_at) VALUES (?, ?, ?, ?)",
     (username, email, hashed_password, datetime.utcnow().isoformat())
@@ -53,34 +56,40 @@ conn.execute(
 ```
 User enters email and password
 ↓
-System verifies credentials against database
+System looks up user by email in database
 ↓
-If valid, Flask session is created
+bcrypt verifies password against stored hash
+↓
+If valid, Flask session is created with user_id and username
 ↓
 User is redirected to dashboard (/home)
 ```
 
 **Security features:**
 - Passwords are never stored in plain text
-- Sessions use random secret keys
-- Failed login attempts are logged
+- Sessions use random secret keys (`os.urandom(24)`)
+- Failed login attempts show flash error messages
 
 ### **Step 4: Dashboard Access**
 ```
 User sees personalized dashboard
 ↓
-Recent bookings are loaded from database
+Recent active bookings are loaded via AJAX (/api/recent-bookings)
 ↓
-Ticket booking form is available
+Ticket statuses are auto-updated (past dates → "Visited")
+↓
+Quick action cards: Chat, Book Tickets, Current Exhibitions
 ↓
 Floating chatbot appears in bottom-right corner
 ```
 
 **Dashboard features:**
-- User-specific booking history
-- Real-time booking form
-- Interactive chatbot interface
-- Responsive design for all devices
+- User-specific booking history (filtered by `user_id`)
+- Real-time ticket booking form modal (with visitor details)
+- Ticket history modal (shows Active, Cancelled, Visited statuses)
+- Booking details modal (full visitor info)
+- Exhibitions modal (current exhibitions display)
+- Interactive floating chatbot with chat persistence
 
 ### **Step 5: Chatbot Interaction**
 ```
@@ -88,91 +97,119 @@ User types message in chatbot
 ↓
 Message is sent to /api/chat endpoint
 ↓
-System processes the request
+Message is saved to chat_history table for persistence
+↓
+System processes the request through a priority pipeline
 ```
 
-**Message processing flow:**
-1. **Q&A Lookup**: Check if question exists in Excel database
-2. **Booking Detection**: Check if user wants to book tickets
-3. **Cancellation Detection**: Check if user wants to cancel
-4. **AI Processing**: If none of above, send to Ollama AI
+**Message processing pipeline (in order):**
+1. **Q&A Lookup**: Normalize question, check against Excel Q&A database (`qa_dict`)
+2. **Cancel Detection**: Check for cancel/delete keywords + extract booking ID via regex
+3. **Booking Detection**: Check for book/ticket keywords + extract visitor details via regex
+4. **AI Processing**: If none of above match, send to Ollama AI agent with MCP tools
 
-### **Step 6: Ticket Booking Process**
+### **Step 6: Ticket Booking Process (via Chat)**
 ```
-User says: "book 2 tickets for tomorrow"
+User says: "Book ticket for John Smith, age 30, Male, contact 9876543210, 2 tickets for tomorrow"
 ↓
-System detects booking intent
+System detects booking intent (keywords: book, ticket, reservation)
 ↓
-Natural language date parsing converts "tomorrow" to actual date
+Regex extracts: name, age, gender, contact, ticket count, date
+↓
+dateparser library converts "tomorrow" to actual YYYY-MM-DD date
 ↓
 System validates date (no past dates allowed)
 ↓
-Unique booking ID is generated (e.g., "GLCXMLXT")
+Unique 8-character booking ID is generated (e.g., "GLCXMLXT")
 ↓
-Booking is saved to database
+Booking is saved to database with status "Active"
 ↓
-Confirmation message is formatted and sent back
+Confirmation message with all details is sent back
 ↓
-Recent bookings section automatically updates
+Recent bookings section automatically refreshes via AJAX
 ```
 
-**Natural language date parsing:**
+**Regex extraction (from `app.py`):**
 ```python
-def parse_natural_date(date_text):
-    if date_text in ['tomorrow', 'tmr', 'tmrw']:
-        return (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-    elif date_text in ['next week']:
-        return (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
-    # ... more patterns
+name_match = re.search(r'for\s+([A-Za-z\s]+),\s*age', query, re.IGNORECASE)
+age_match = re.search(r'age\s+(\d+)', query, re.IGNORECASE)
+gender_match = re.search(r'(male|female|other)', query, re.IGNORECASE)
+contact_match = re.search(r'contact\s+(\d{10})', query, re.IGNORECASE)
+ticket_match = re.search(r'(\d+)\s*tickets?', query.lower())
+date_match = re.search(r'(\d+)\s*tickets?\s+for\s+([a-zA-Z0-9\s\-/,]+)$', query, re.IGNORECASE)
 ```
 
-### **Step 7: AI-Powered Responses**
+### **Step 7: Ticket Booking (via Web Form)**
+```
+User clicks "Book Tickets" on dashboard
+↓
+Modal opens with form: visitor name, age, gender, contact, tickets, date
+↓
+Form submits to /api/book-ticket endpoint
+↓
+Server validates date and creates booking
+↓
+Confirmation displayed in modal
+↓
+Bookings list auto-refreshes after 1 second
+```
+
+### **Step 8: AI-Powered Responses**
 ```
 User asks: "Where is the Mona Lisa?"
 ↓
 Question not found in Q&A database
 ↓
-Request sent to Ollama AI model (qwen2.5:1.5b)
+Not a booking or cancellation request
 ↓
-AI model calls appropriate MCP tool
+Request sent to Ollama AI model (llama3.2:latest)
 ↓
-Tool searches Excel art database
+AI model receives the query via Smolagents ToolCallingAgent
 ↓
-Response is formatted and returned
+AI decides to call navigate_to_painting("Mona Lisa") MCP tool
+↓
+Tool searches Unique_Museum_Art_Plan.xlsx for the artwork
+↓
+Response with floor, section, and room info is formatted and returned
 ```
 
 **AI integration details:**
-- Uses local Ollama server for privacy
-- MCP (Model Context Protocol) for tool communication
-- Lightweight model (1.5B parameters) for speed
-- Structured tool calling for reliable responses
+- Uses local Ollama server for complete privacy (no data sent externally)
+- MCP (Model Context Protocol) for structured tool communication via FastMCP
+- `llama3.2:latest` model used in production (`app.py`)
+- 6 MCP tools available: check availability, navigate, description, painter info, image, complete info
+- Smolagents `ToolCallingAgent` handles tool selection and execution
 
-### **Step 8: Artwork Navigation**
+### **Step 9: Artwork Navigation**
 ```
 User asks: "Tell me about Starry Night"
 ↓
-AI calls painting_description tool
+AI calls get_complete_artwork_info("Starry Night") or painting_description() tool
 ↓
 Tool searches Unique_Museum_Art_Plan.xlsx
 ↓
-Artwork details are retrieved
+Artwork details are retrieved (room, floor, section, description, history, artist)
 ↓
-Formatted response includes location, artist, description
+Formatted response includes all available information
 ```
 
 **Data sources:**
-- `Chatbot Question and answers.xlsx`: Pre-defined Q&A pairs
-- `Unique_Museum_Art_Plan.xlsx`: Artwork information and locations
+- `Chatbot Question and answers.xlsx`: Pre-defined Q&A pairs (loaded at startup into `qa_dict`)
+- `Unique_Museum_Art_Plan.xlsx`: Artwork information including names, rooms, descriptions, history, artist info
 
-### **Step 9: Booking Cancellation**
+### **Step 10: Booking Cancellation**
 ```
 User says: "cancel booking ABC12345"
 ↓
-System extracts booking ID using regex
+System detects cancel intent (keywords: cancel, cancellation, delete)
 ↓
-Database is searched for user's booking
+Regex extracts 8-character booking ID from message
 ↓
-If found and belongs to user, booking is deleted
+Database is searched for booking matching ID AND user_id
+↓
+If found and belongs to user:
+  → Status updated to "Cancelled" (soft delete)
+  → cancelled_at timestamp is recorded
 ↓
 Confirmation message is sent
 ↓
@@ -180,17 +217,32 @@ Recent bookings section updates automatically
 ```
 
 **Security features:**
-- Users can only cancel their own bookings
-- Booking ID validation prevents unauthorized access
+- Users can only cancel their own bookings (verified via `user_id`)
+- Bookings are **soft deleted** — status changes to "Cancelled", record is preserved
 - Database transactions ensure data integrity
 
-### **Step 10: Real-time Updates**
+### **Step 11: Chat Persistence**
+```
+Every message sent or received
+↓
+chat_persistence.js saves message to /api/save-chat
+↓
+Message stored in chat_history table with user_id, sender, timestamp
+↓
+On page load, /api/chat-history restores previous messages
+↓
+On logout, /api/clear-chat clears the user's chat history
+```
+
+### **Step 12: Real-time Updates**
 ```
 After any booking or cancellation
 ↓  
-JavaScript automatically calls refreshBookings()
+JavaScript detects booking_created or booking_cancelled in response
 ↓
-New data is fetched from /api/recent-bookings
+setTimeout triggers loadRecentBookings() after 1 second
+↓
+New data is fetched from /api/recent-bookings via AJAX
 ↓
 UI updates without page refresh
 ↓
@@ -198,158 +250,192 @@ User sees immediate feedback
 ```
 
 **Frontend updates:**
-- AJAX calls for seamless experience
-- Automatic refresh after actions
-- Loading states and error handling
-- Responsive design updates
+- AJAX calls (fetch API) for seamless experience
+- Automatic refresh after booking/cancellation actions
+- Loading states with CSS spinner animations
+- Responsive card grid updates dynamically
 
 ## 🔧 Technical Architecture Breakdown
 
 ### **Backend Components**
 
 1. **Flask Application (`app.py`)**
-   - Web server and route handler
+   - Web server and route handler (13 routes)
    - User authentication and sessions
-   - Database operations
-   - Natural language processing
+   - Database operations (3 tables)
+   - Natural language date parsing (dateparser + manual fallback)
+   - Chat history persistence
+   - Booking CRUD with status lifecycle
 
 2. **MCP Server (`server.py`)**
-   - Tool functions for AI agent
-   - Artwork search and booking logic
-   - Database interactions for tools
+   - FastMCP server with 6 artwork tools
+   - Excel data loading and searching
+   - Stdio transport for communication with Smolagents
 
 3. **AI Agent (`agent.py`)**
-   - Ollama model configuration
-   - Tool integration setup
-   - AI response generation
+   - Standalone Ollama model configuration
+   - MCP tool integration setup
+   - Used for development/testing
+
+4. **Database Migration (`migrate_db.py`)**
+   - Schema evolution script
+   - Adds new columns to bookings table
+   - Creates chat_history table
+   - Maps existing data to new schema
 
 ### **Frontend Components**
 
-1. **HTML Templates**
-   - `landing.html`: Marketing homepage
-   - `login.html` & `signup.html`: Authentication
-   - `home.html`: User dashboard
-   - `base.html`: Common layout with chatbot
+1. **HTML Templates (Jinja2)**
+   - `base.html`: Common layout with navbar, floating chatbot, AOS init
+   - `landing.html`: Marketing homepage with hero, features, gallery, about sections
+   - `login.html` & `signup.html`: Auth forms with gradient backgrounds
+   - `home.html`: Dashboard with quick actions, bookings, 4 modals
 
 2. **JavaScript Functions**
-   - Chatbot message handling
-   - Form submissions and validation
-   - Real-time UI updates
-   - Error handling and user feedback
+   - `chat_persistence.js`: Chat save/load/clear with database backend
+   - Chatbot message handling with loading states
+   - Form submissions with AJAX
+   - Real-time booking list updates
+   - Modal management (open/close/outside-click)
+
+3. **Styling**
+   - Custom CSS (no framework) with CSS variables for theming
+   - CSS Grid for responsive card layouts
+   - Glassmorphism effects (backdrop-filter)
+   - Gradient backgrounds and hover animations
+   - Mobile-responsive with `@media (max-width: 768px)` breakpoint
 
 ### **Data Storage**
 
 1. **SQLite Database (`app.db`)**
-   - Users table: authentication data
-   - Bookings table: ticket reservations
+   - `users` table: authentication data (id, username, email, bcrypt password)
+   - `bookings` table: ticket reservations with visitor details and status lifecycle
+   - `chat_history` table: persistent chat messages per user
 
 2. **Excel Files**
-   - Q&A database: pre-defined questions and answers
-   - Art database: artwork information and locations
+   - Q&A database: pre-defined question-answer pairs
+   - Art database: artwork names, rooms, floors, sections, descriptions, history, artist info
 
 ## 🎨 User Experience Flow
 
 ### **First-Time User Journey**
-1. **Discovery**: Lands on attractive homepage
-2. **Registration**: Simple signup process
-3. **Onboarding**: Immediate access to chatbot
-4. **Interaction**: Natural conversation for booking
-5. **Confirmation**: Clear booking details and next steps
+1. **Discovery**: Lands on attractive landing page with hero, features, gallery
+2. **Registration**: Simple 3-field signup (username, email, password)
+3. **Login**: Quick authentication with flash messages
+4. **Dashboard**: Personalized welcome with quick action cards
+5. **Chat**: Floating chatbot with natural conversation
+6. **Booking**: Book via chat or web form with full visitor details
+7. **Confirmation**: Clear booking details with unique ID
 
 ### **Returning User Journey**
 1. **Login**: Quick authentication
-2. **Dashboard**: View booking history
-3. **New Booking**: Easy ticket booking
-4. **Management**: Cancel or modify bookings
-5. **Support**: Get help through chatbot
+2. **Dashboard**: View active bookings with auto-updated statuses
+3. **Chat History**: Previous chat messages restored automatically
+4. **Management**: Cancel bookings, view details, check history
+5. **Support**: Get help through AI chatbot
 
 ## 🔄 Data Flow Examples
 
 ### **Booking Flow**
 ```
-User Input: "book 3 tickets for next weekend"
+User Input: "Book ticket for Alice, age 25, Female, contact 9876543210, 3 tickets for next weekend"
 ↓
-Date Parsing: "next weekend" → "2025-01-18"
+Regex Extraction: name="Alice", age=25, gender="Female", contact="9876543210", tickets=3
+↓
+Date Parsing: "next weekend" → "2026-05-02" (via dateparser)
 ↓
 Validation: Date is in future ✓
 ↓
-Database: Insert booking record
+Database: INSERT with booking_id="X7K2M9PL", status="Active"
 ↓
-Response: Formatted confirmation with booking ID
+Response: Formatted confirmation with all details
 ↓
 UI Update: Recent bookings refresh automatically
 ```
 
-### **Question Flow**
+### **Question Flow (Q&A Match)**
 ```
 User Input: "What are your opening hours?"
 ↓
-Q&A Lookup: Check Excel database
+Normalize: "what are your opening hours" (lowercase, no punctuation)
 ↓
-Match Found: Return pre-defined answer
+Q&A Lookup: Check qa_dict → Match Found!
 ↓
-Response: Display formatted answer
+Response: Return pre-defined answer from Excel
 ```
 
-### **AI Question Flow**
+### **Question Flow (AI Fallback)**
 ```
 User Input: "Where can I find Van Gogh paintings?"
 ↓
 Q&A Lookup: No match found
 ↓
-AI Processing: Send to Ollama model
+Not a booking or cancel request
 ↓
-Tool Calling: navigate_to_painting("Van Gogh")
+AI Processing: Send to llama3.2 via Smolagents ToolCallingAgent
 ↓
-Data Search: Query art database
+Tool Calling: AI decides to call navigate_to_painting("Van Gogh")
 ↓
-Response: Return location information
+Data Search: Query Unique_Museum_Art_Plan.xlsx
+↓
+Response: Return location information (floor, section, room)
 ```
 
 ## 🛡️ Security & Reliability
 
 ### **Data Protection**
-- Passwords hashed with bcrypt
-- SQL injection prevention with parameterized queries
-- XSS protection with proper output encoding
-- Session security with random keys
+- Passwords hashed with bcrypt (random salt per password)
+- SQL injection prevention with parameterized queries throughout
+- Session security with `os.urandom(24)` secret keys
+- Booking ownership verification via `user_id`
 
 ### **Error Handling**
+- Try/catch blocks on all database operations
 - Graceful degradation when AI is unavailable
-- Input validation on all user inputs
-- Database transaction rollback on errors
-- User-friendly error messages
+- Input validation on all user inputs (dates, contacts, etc.)
+- User-friendly error messages with emoji indicators
+- Debug logging with `[Q&A DEBUG]`, `[BOOKING]`, `[AGENT]`, `[ERROR]` prefixes
 
 ### **Performance Optimization**
-- Lightweight AI model for fast responses
-- Database indexing for quick queries
-- Cached Q&A data loaded at startup
-- Efficient frontend updates
+- Q&A data loaded once at startup (O(1) dictionary lookup)
+- Art data loaded once at startup in MCP server
+- Lightweight AI model for fast local responses
+- AJAX updates avoid full page reloads
+- CSS animations for perceived performance
 
 ## 🎯 Key Features Explained
 
 ### **Natural Language Date Parsing**
-- Converts "tomorrow" → actual date
-- Supports multiple formats and variations
+- Primary: `dateparser` library for advanced parsing (relative dates, multiple formats)
+- Fallback: Manual pattern matching for common cases (tomorrow, next week, etc.)
 - Prevents booking for past dates
-- User-friendly error messages
+- User-friendly error messages for unrecognized dates
 
 ### **Smart Booking System**
-- Unique 8-character booking IDs
-- Real-time availability checking
-- Automatic booking history updates
-- Secure cancellation process
+- Unique 8-character alphanumeric booking IDs
+- Full visitor details: name, age, gender, contact
+- Status lifecycle: Active → Visited (auto) / Cancelled (manual)
+- Dual booking methods: chat conversation or web form
+- Automatic dashboard refresh after actions
 
 ### **AI-Powered Assistance**
-- Local processing for privacy
+- Local processing via Ollama for complete privacy
+- 6 specialized MCP tools for artwork queries
 - Contextual responses based on user queries
-- Tool integration for specific actions
-- Fallback to pre-defined Q&A
+- Fallback hierarchy: Q&A → Cancel → Booking → AI
+
+### **Chat Persistence**
+- Messages saved to SQLite per user session
+- Chat history restored on page load
+- Chat cleared on logout
+- Both user and bot messages preserved
 
 ### **Responsive Design**
 - Works on desktop, tablet, and mobile
-- Touch-friendly interface
-- Fast loading times
-- Accessible design patterns
+- CSS Grid with `auto-fit` for fluid card layouts
+- Chatbot resizes for mobile (`width: 90%`)
+- Touch-friendly interactive elements
 
-This step-by-step guide shows how MuseumBot transforms a simple web application into an intelligent, user-friendly museum assistant that combines the best of modern web development with cutting-edge AI technology. 
+---
+
+This step-by-step guide shows how MuseumBot transforms a simple web application into an intelligent, user-friendly museum assistant that combines the best of modern web development with cutting-edge AI technology.
