@@ -1,0 +1,31 @@
+# Virtual environments
+.venv/
+.venv-new/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Egg info
+*.egg-info/
+
+# Database
+*.db
+
+# Lock files (large)
+uv.lock
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large binary files (optional — remove lines if you want these in the repo)
+# *.pdf
+# *.pptx
+# *.xlsx

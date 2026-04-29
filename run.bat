@@ -1,0 +1,3 @@
+@echo off
+echo Starting Museum Chatbot...
+python -u app.py

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}MuseumBot - Discover Art & Culture{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 data-aos="fade-up">Discover the Magic of Art</h1>
+        <p data-aos="fade-up" data-aos-delay="200">Experience world-class exhibitions with our AI-powered museum assistant</p>
+        <div data-aos="fade-up" data-aos-delay="400">
+            <a href="{{ url_for('signup') }}" class="btn btn-primary" style="margin-right: 1rem;">
+                <i class="fas fa-user-plus"></i> Get Started
+            </a>
+            <a href="#gallery" class="btn btn-secondary">
+                <i class="fas fa-images"></i> View Gallery
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: 5rem 0; background: var(--bg-light);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <h2 style="text-align: center; font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 3rem; color: var(--text-dark);" data-aos="fade-up">
+            Why Choose MuseumBot?
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-robot" style="font-size: 3rem; color: var(--secondary-color);"></i>
+                </div>
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">AI-Powered Assistant</h3>
+                <p style="text-align: center; color: var(--text-light);">
+                    Get instant answers about artworks, artists, and museum information with our intelligent chatbot.
+                </p>
+            </div>
+            
+            <div class="card" data-aos="fade-up" data-aos-delay="200">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-ticket-alt" style="font-size: 3rem; color: var(--accent-color);"></i>
+                </div>
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">Smart Ticket Booking</h3>
+                <p style="text-align: center; color: var(--text-light);">
+                    Book your museum tickets seamlessly through our conversational interface.
+                </p>
+            </div>
+            
+            <div class="card" data-aos="fade-up" data-aos-delay="300">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: var(--primary-color);"></i>
+                </div>
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--text-dark);">Navigation Guide</h3>
+                <p style="text-align: center; color: var(--text-light);">
+                    Find any artwork or exhibition with our intelligent navigation system.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery" style="padding: 5rem 0;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <h2 style="text-align: center; font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 3rem; color: var(--text-dark);" data-aos="fade-up">
+            Featured Artworks
+        </h2>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="100">
+                <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop" alt="Classical Art">
+                <div class="gallery-overlay">
+                    <h3>Classical Masterpieces</h3>
+                    <p>Timeless works from the Renaissance era</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="200">
+                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop" alt="Modern Art">
+                <div class="gallery-overlay">
+                    <h3>Modern Expressions</h3>
+                    <p>Contemporary art that challenges perspectives</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="300">
+                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop" alt="Sculpture">
+                <div class="gallery-overlay">
+                    <h3>Sculptural Wonders</h3>
+                    <p>Three-dimensional art that comes to life</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="400">
+                <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop" alt="Digital Art">
+                <div class="gallery-overlay">
+                    <h3>Digital Innovation</h3>
+                    <p>Art meets technology in the digital age</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="500">
+                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop" alt="Photography">
+                <div class="gallery-overlay">
+                    <h3>Photographic Stories</h3>
+                    <p>Capturing moments through the lens</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item" data-aos="fade-up" data-aos-delay="600">
+                <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop" alt="Interactive Art">
+                <div class="gallery-overlay">
+                    <h3>Interactive Experiences</h3>
+                    <p>Art that responds to your presence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" style="padding: 5rem 0; background: var(--gradient-primary); color: white;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+            <div data-aos="fade-right">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 2rem;">
+                    About Our Museum
+                </h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                    Our museum houses one of the most comprehensive collections of art spanning centuries of human creativity. 
+                    From classical masterpieces to contemporary installations, we celebrate the diversity of artistic expression.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    With our AI-powered assistant, every visitor can enjoy a personalized experience, discovering the stories 
+                    behind each artwork and navigating our vast collection with ease.
+                </p>
+            </div>
+            
+            <div data-aos="fade-left">
+                <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 20px; backdrop-filter: blur(10px);">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">
+                        <i class="fas fa-star" style="margin-right: 0.5rem;"></i>
+                        Museum Highlights
+                    </h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="margin-right: 1rem; color: var(--accent-color);"></i>
+                            Over 10,000 artworks
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="margin-right: 1rem; color: var(--accent-color);"></i>
+                            Interactive exhibits
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="margin-right: 1rem; color: var(--accent-color);"></i>
+                            Guided tours available
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="margin-right: 1rem; color: var(--accent-color);"></i>
+                            Family-friendly activities
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section style="padding: 5rem 0; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 2rem; color: var(--text-dark);" data-aos="fade-up">
+            Ready to Explore?
+        </h2>
+        <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-light);" data-aos="fade-up" data-aos-delay="200">
+            Join thousands of visitors who have discovered the magic of art through our AI-powered museum experience.
+        </p>
+        <div data-aos="fade-up" data-aos-delay="400">
+            <a href="{{ url_for('signup') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <i class="fas fa-rocket"></i> Start Your Journey
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %} 

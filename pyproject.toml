@@ -1,0 +1,18 @@
+[project]
+name = "museum-chatbot"
+version = "0.1.0"
+description = "AI-powered Museum Chatbot with booking system using Flask, Smolagents, and MCP"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.0.4",
+    "colorama>=0.4.6",
+    "mcp[cli]>=1.6.0",
+    "smolagents[litellm,mcp]>=1.13.0",
+
+    "flask>=3.0.0",
+    "bcrypt>=4.0.1",
+    "pandas>=2.0.0",
+    "openpyxl>=3.0.0",
+    "dateparser>=1.2.0",
+]
