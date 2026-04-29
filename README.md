@@ -7,20 +7,24 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 ### 🤖 AI-Powered Chatbot
 - **Intelligent Q&A**: Answers questions about artworks, artists, and museum information
 - **Natural Language Processing**: Understands conversational queries
-- **Local AI Processing**: Uses Ollama with qwen2.5:1.5b model for privacy and speed
-- **Smart Date Parsing**: Converts natural language dates ("tomorrow", "next week") to proper format
+- **Local AI Processing**: Uses Ollama with llama3.2 model for privacy and speed
+- **Smart Date Parsing**: Converts natural language dates ("tomorrow", "next week") to proper format using `dateparser`
+- **MCP Tool Integration**: AI agent uses MCP tools for artwork search, navigation, and information retrieval
 
 ### 🎫 Ticket Management
-- **Seamless Booking**: Book tickets through chat or web form
+- **Seamless Booking**: Book tickets through chat or web form with visitor details (name, age, gender, contact)
 - **Real-time Updates**: Automatic refresh of booking history
-- **Booking Cancellation**: Cancel tickets with booking ID
+- **Booking Cancellation**: Cancel tickets with booking ID (soft delete with status tracking)
 - **Unique Booking IDs**: 8-character alphanumeric codes (e.g., GLCXMLXT)
 - **Date Validation**: Prevents booking for past dates
+- **Ticket Status Tracking**: Active, Visited, and Cancelled statuses with automatic updates
+- **Ticket History**: View all past bookings with full status history
 
 ### 🖼️ Art Navigation
 - **Artwork Search**: Find specific paintings and their locations
-- **Room Navigation**: Get directions to artwork locations
+- **Room Navigation**: Get step-by-step directions to artwork locations (floor, section, room)
 - **Availability Check**: Verify if artworks are on display
+- **Complete Artwork Info**: Get description, history, and artist information
 - **Excel Data Integration**: Loads art information from structured data
 
 ### 🔐 User Management
@@ -28,6 +32,7 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 - **User Registration**: Email-based signup system
 - **Session Management**: Persistent login sessions
 - **User-Specific Bookings**: Private booking history
+- **Chat Persistence**: Chat history saved per user in database
 
 ## 🛠️ Tech Stack
 
@@ -37,19 +42,23 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 - **Bcrypt**: Password security
 - **Pandas**: Excel data processing
 - **OpenPyXL**: Excel file handling
+- **Dateparser**: Natural language date parsing
 
 ### AI & Tools
 - **Ollama**: Local LLM runtime
-- **qwen2.5:1.5b**: Lightweight AI model
-- **Smolagents**: AI agent framework
-- **MCP (Model Context Protocol)**: Tool communication
-- **LiteLLM**: Model integration
+- **llama3.2:latest**: AI model (used in main app)
+- **qwen2.5:1.5b**: Lightweight AI model (used in standalone agent)
+- **Smolagents**: AI agent framework with tool-calling capabilities
+- **MCP (Model Context Protocol)**: Tool communication via FastMCP server
+- **LiteLLM**: Model integration layer
+- **ChromaDB**: Vector database for embeddings
 
 ### Frontend
-- **HTML5/CSS3**: Modern responsive design
-- **JavaScript**: Dynamic interactions
-- **Bootstrap**: UI components
-- **AOS (Animate On Scroll)**: Smooth animations
+- **HTML5/CSS3**: Modern responsive design with custom styling
+- **JavaScript**: Dynamic interactions and chat persistence
+- **Font Awesome**: Icon library
+- **AOS (Animate On Scroll)**: Smooth scroll animations
+- **Google Fonts**: Poppins & Playfair Display typography
 
 ### Development
 - **Python 3.12+**: Runtime environment
@@ -67,8 +76,8 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd museum-chatbot
+git clone https://github.com/chaitanyasaiyerra/Musuem-chatbot.git
+cd Musuem-chatbot
 ```
 
 ### 2. Install Ollama
@@ -85,7 +94,7 @@ curl -fsSL https://ollama.ai/install.sh | sh
 
 ### 3. Download AI Model
 ```bash
-ollama pull qwen2.5:1.5b
+ollama pull llama3.2:latest
 ```
 
 ### 4. Set Up Python Environment
@@ -97,7 +106,7 @@ uv pip install -e .
 # Or using traditional pip
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip install flask bcrypt pandas openpyxl dateparser smolagents[litellm,mcp] mcp[cli] chromadb colorama
 ```
 
 ### 5. Prepare Data Files
@@ -131,17 +140,17 @@ The application will be available at `http://localhost:5000`
 3. **Login**: Access your personalized dashboard
 4. **Chat Interface**: Use the floating chatbot for:
    - General museum questions
-   - Artwork information
-   - Ticket booking
+   - Artwork information & navigation
+   - Ticket booking with visitor details
    - Booking cancellation
 
 ### Chatbot Commands
 
 #### Booking Tickets
 ```
-"book 2 tickets for tomorrow"
-"book a ticket for next week"
-"book 3 tickets for 2025-12-25"
+"Book ticket for John Smith, age 30, Male, contact 9876543210, 2 tickets for tomorrow"
+"Book ticket for Jane Doe, age 25, Female, contact 8765432109, 1 ticket for next Monday"
+"Book ticket for Alex, age 28, Male, contact 7654321098, 3 tickets for 2026-12-25"
 ```
 
 #### Cancelling Tickets
@@ -185,7 +194,7 @@ The application uses SQLite by default. For production, consider:
 Modify `app.py` to change the Ollama model:
 ```python
 model = LiteLLMModel(
-    model_id="ollama_chat/qwen2.5:1.5b",  # Change model here
+    model_id="ollama_chat/llama3.2:latest",  # Change model here
     num_ctx=2048  # Adjust context window
 )
 ```
@@ -193,36 +202,52 @@ model = LiteLLMModel(
 ## 📁 Project Structure
 
 ```
-museum-chatbot/
-├── app.py                 # Main Flask application
-├── server.py             # MCP tool server
-├── agent.py              # AI agent configuration
-├── app.db                # SQLite database
-├── pyproject.toml        # Project dependencies
-├── uv.lock              # Dependency lock file
-├── templates/            # HTML templates
-│   ├── base.html         # Base template with chatbot
-│   ├── landing.html      # Homepage
-│   ├── login.html        # Login page
-│   ├── signup.html       # Registration page
-│   └── home.html         # User dashboard
-├── venv/                 # Virtual environment
-├── Chatbot Question and answers.xlsx    # Q&A database
-└── Unique_Museum_Art_Plan.xlsx          # Artwork data
+Musuem-chatbot/
+├── app.py                              # Main Flask application (routes, auth, chat logic)
+├── server.py                           # MCP tool server (artwork search, navigation, info)
+├── agent.py                            # Standalone AI agent configuration
+├── pyproject.toml                      # Project dependencies and metadata
+├── run.bat                             # Windows startup script
+├── migrate_db.py                       # Database migration utility
+├── show_db.py                          # Database viewer utility
+├── analyze_ppt.py                      # PPT analysis script
+├── extract_pdf_script.py               # PDF extraction script
+├── database_view.html                  # HTML database viewer
+├── templates/                          # HTML templates (Jinja2)
+│   ├── base.html                       # Base template with navbar & floating chatbot
+│   ├── landing.html                    # Homepage / landing page
+│   ├── login.html                      # Login page
+│   ├── signup.html                     # Registration page
+│   └── home.html                       # User dashboard with bookings
+├── static/                             # Static assets
+│   └── chat_persistence.js             # Chat history persistence script
+├── Chatbot Question and answers.xlsx   # Q&A database
+├── Unique_Museum_Art_Plan.xlsx         # Artwork data
+├── README.md                           # This file
+├── STEP_BY_STEP_GUIDE.md              # Setup guide
+├── TECHNICAL_GUIDE.md                  # Technical documentation
+└── .gitignore                          # Git ignore rules
 ```
 
 ### Key Files Explained
 
-- **`app.py`**: Core Flask application with routes, authentication, and chat logic
-- **`server.py`**: MCP server providing tools for artwork search and ticket booking
-- **`agent.py`**: AI agent setup with Ollama model configuration
-- **`templates/`**: HTML templates with responsive design and chatbot integration
-- **Excel files**: Data sources for Q&A and artwork information
+- **`app.py`**: Core Flask application with routes, authentication, chat logic, booking management, and AI agent integration
+- **`server.py`**: MCP server providing 6 tools — painting availability, navigation, description, painter info, artwork image, and complete artwork info
+- **`agent.py`**: Standalone AI agent setup with Ollama model configuration (uses qwen2.5:1.5b)
+- **`templates/`**: Jinja2 HTML templates with custom CSS, responsive design, and floating chatbot integration
+- **`static/chat_persistence.js`**: Handles saving/loading chat history to the database per user session
+- **Excel files**: Data sources for Q&A pairs and artwork information
 
 ## 🔧 Development
 
 ### Running in Development Mode
 ```bash
+# Windows
+set FLASK_ENV=development
+set FLASK_DEBUG=1
+python app.py
+
+# Linux/macOS
 export FLASK_ENV=development
 export FLASK_DEBUG=1
 python app.py
@@ -231,11 +256,15 @@ python app.py
 ### Database Management
 ```bash
 # View database contents
+python show_db.py
+
+# Or using sqlite3 directly
 sqlite3 app.db ".tables"
 sqlite3 app.db "SELECT * FROM bookings;"
 
 # Reset database
-rm app.db
+del app.db   # Windows
+rm app.db    # Linux/macOS
 python -c "from app import init_db; init_db()"
 ```
 
@@ -243,7 +272,7 @@ python -c "from app import init_db; init_db()"
 ```bash
 # Test Ollama connection
 ollama list
-ollama run qwen2.5:1.5b "Hello, how are you?"
+ollama run llama3.2:latest "Hello, how are you?"
 
 # Test MCP server
 uv run server.py
@@ -260,13 +289,19 @@ ollama serve
 
 # Check model availability
 ollama list
+
+# Pull the model if missing
+ollama pull llama3.2:latest
 ```
 
 **Database Errors**
 ```bash
 # Recreate database
-rm app.db
+del app.db   # Windows
 python -c "from app import init_db; init_db()"
+
+# Run migrations if schema changed
+python migrate_db.py
 ```
 
 **Import Errors**
@@ -285,9 +320,10 @@ app.run(host='0.0.0.0', port=5001, debug=True)
 
 - **Password Hashing**: Uses bcrypt for secure password storage
 - **Session Security**: Flask sessions with random secret keys
-- **SQL Injection Protection**: Parameterized queries
+- **SQL Injection Protection**: Parameterized queries throughout
 - **Input Validation**: Server-side validation for all inputs
-- **Local AI**: No data sent to external AI services
+- **Local AI**: No data sent to external AI services — all processing happens locally via Ollama
+- **Soft Deletes**: Bookings are cancelled via status update, not deleted
 
 ## 🚀 Deployment
 
@@ -297,18 +333,6 @@ app.run(host='0.0.0.0', port=5001, debug=True)
 3. Configure environment variables
 4. Set up database backups
 5. Enable HTTPS
-
-### Docker Deployment (TODO)
-```dockerfile
-# Dockerfile example
-FROM python:3.12-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["gunicorn", "app:app"]
-```
 
 ## 🤝 Contributing
 
@@ -343,8 +367,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Ollama** for local AI processing
 - **Flask** for the web framework
-- **Bootstrap** for UI components
-- **Unsplash** for placeholder images
+- **Smolagents** by HuggingFace for the AI agent framework
+- **MCP (Model Context Protocol)** for tool communication
+- **Font Awesome** for icons
+- **AOS** for scroll animations
 
 ## 📞 Support
 
@@ -355,4 +381,4 @@ For support and questions:
 
 ---
 
-**Made with ❤️ for the art community** 
+**Made with ❤️ for the art community**
