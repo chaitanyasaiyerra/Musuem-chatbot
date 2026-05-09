@@ -14,7 +14,7 @@ import re
 
 # Setup Flask
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+app.secret_key = os.environ.get('SECRET_KEY', 'museum-chatbot-secret-key-change-in-production')
 
 # ====== SQLite Setup ======
 DB_PATH = "app.db"
@@ -37,15 +37,23 @@ def init_db():
             created_at TEXT NOT NULL
         )
     ''')
-    # Bookings table
+    # Bookings table — full schema including all columns used by INSERT statements
     cur.execute('''
         CREATE TABLE IF NOT EXISTS bookings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             booking_id TEXT NOT NULL,
+            user_id INTEGER,
             name TEXT NOT NULL,
+            visitor_name TEXT,
+            age INTEGER,
+            gender TEXT,
+            contact TEXT,
             tickets INTEGER NOT NULL,
             date TEXT NOT NULL,
-            created_at TEXT NOT NULL
+            status TEXT DEFAULT 'Active',
+            created_at TEXT NOT NULL,
+            cancelled_at TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
     # Chat history table
@@ -156,9 +164,10 @@ def parse_natural_date(date_text):
     
     return None
 
+
 def update_ticket_statuses():
     """Update ticket statuses based on visit dates"""
-    conn = get_db()
+    conn = get_db()  
     today = datetime.now().date().strftime('%Y-%m-%d')
     
     # Update Active tickets with past dates to Visited
