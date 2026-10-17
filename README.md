@@ -43,11 +43,13 @@ L_GUIDE.md) — Deep dive into the architecture, data flow, and components
 - **Chat Persistence**: Chat history saved per user in database
 
 
+
 ## 🎬 Project Demo
 
 Watch MuseumBot in action, showcasing the AI-powered chatbot, artwork navigation, secure user authentication, and museum ticket booking workflow.
 
 ▶️ **[Watch the Complete Project Demo](https://drive.google.com/file/d/18sY4eiykF8jvc5wVkhLI1y6h-W-pMcvD/view?usp=sharing)**
+
 
 
 ## 🛠️ Tech Stack
