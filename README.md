@@ -4,9 +4,13 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 
 📚 **Read the full documentation:**
 - [Step-by-Step Guide](STEP_BY_STEP_GUIDE.md) — How the application works from a user's perspective
-- [Technical Guide](TECHNICAL_GUIDE.md) — Deep dive into the architecture, data flow, and components
+- [Technical Guide](TECHNICA
+
+L_GUIDE.md) — Deep dive into the architecture, data flow, and components
 
 ## ✨ Features
+
+
 
 ### 🤖 AI-Powered Chatbot
 - **Intelligent Q&A**: Answers questions about artworks, artists, and museum information
@@ -37,6 +41,14 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 - **Session Management**: Persistent login sessions
 - **User-Specific Bookings**: Private booking history
 - **Chat Persistence**: Chat history saved per user in database
+
+
+## 🎬 Project Demo
+
+Watch MuseumBot in action, showcasing the AI-powered chatbot, artwork navigation, secure user authentication, and museum ticket booking workflow.
+
+▶️ **[Watch the Complete Project Demo](https://drive.google.com/file/d/18sY4eiykF8jvc5wVkhLI1y6h-W-pMcvD/view?usp=sharing)**
+
 
 ## 🛠️ Tech Stack
 
