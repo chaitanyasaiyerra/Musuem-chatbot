@@ -4,9 +4,7 @@ A sophisticated web application that combines AI chatbot capabilities with museu
 
 📚 **Read the full documentation:**
 - [Step-by-Step Guide](STEP_BY_STEP_GUIDE.md) — How the application works from a user's perspective
-- [Technical Guide](TECHNICA
-
-L_GUIDE.md) — Deep dive into the architecture, data flow, and components
+- [Technical Guide](TECHNICAL_GUIDE.md) — Deep dive into the architecture, data flow, and components
 
 ## ✨ Features
 
